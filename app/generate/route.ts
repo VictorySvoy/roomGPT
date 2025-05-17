@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     if (!result.success) {
       return new Response(
-        "Too many uploads in 1 day. Please try again in a 24 hours.",
+        "Too many uploads in 1 day. Please try again in 24 hours.",
         {
           status: 429,
           headers: {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
   const { imageUrl, theme, room } = await request.json();
 
-  // POST request to Replicate to start the image restoration generation process
+  // POST request to Replicate to start the image generation process
   let startResponse = await fetch("https://api.replicate.com/v1/predictions", {
     method: "POST",
     headers: {
@@ -60,15 +60,22 @@ export async function POST(request: Request) {
     }),
   });
 
+  // Получаем ответ
   let jsonStartResponse = await startResponse.json();
+
+  console.log("▶️ Replicate response:", jsonStartResponse);
+
+  // Проверяем наличие URL для получения результата
+  if (!jsonStartResponse.urls || !jsonStartResponse.urls.get) {
+    return new Response("Failed to start image generation", { status: 500 });
+  }
 
   let endpointUrl = jsonStartResponse.urls.get;
 
-  // GET request to get the status of the image restoration process & return the result when it's ready
+  // Ждём готовности результата
   let restoredImage: string | null = null;
   while (!restoredImage) {
-    // Loop in 1s intervals until the alt text is ready
-    console.log("polling for result...");
+    console.log("⏳ Polling for result...");
     let finalResponse = await fetch(endpointUrl, {
       method: "GET",
       headers: {
