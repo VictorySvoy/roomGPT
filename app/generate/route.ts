@@ -59,14 +59,15 @@ export async function POST(request: Request) {
       },
     }),
   });
-  let jsonStartResponse = await startResponse.json();
+/////////..................................
+jsonStartResponse = await startResponse.json();
 
 console.log("▶️ Replicate response:", jsonStartResponse); // ← ЭТА СТРОКА
 
 if (!jsonStartResponse.urls || !jsonStartResponse.urls.get) {
   return new Response("Failed to start image generation", { status: 500 });
 }
-
+/////////..................................
   let jsonStartResponse = await startResponse.json();
 
   let endpointUrl = jsonStartResponse.urls.get;
