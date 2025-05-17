@@ -61,16 +61,15 @@ export async function POST(request: Request) {
   });
 
   // Получаем ответ
-  let jsonStartResponse = await startResponse.json();
+ const jsonStartResponse = await startResponse.json();
 
-  console.log("▶️ Replicate response:", jsonStartResponse);
+console.log("▶️ Replicate response:", jsonStartResponse);
 
-  // Проверяем наличие URL для получения результата
-  if (!jsonStartResponse.urls || !jsonStartResponse.urls.get) {
-    return new Response("Failed to start image generation", { status: 500 });
-  }
+if (!jsonStartResponse.urls || !jsonStartResponse.urls.get) {
+  return new Response("Failed to start image generation", { status: 500 });
+}
 
-  let endpointUrl = jsonStartResponse.urls.get;
+let endpointUrl = jsonStartResponse.urls.get;
 
   // Ждём готовности результата
   let restoredImage: string | null = null;
